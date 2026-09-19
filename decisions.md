@@ -161,25 +161,26 @@ Agentic tool use, web search, and multi-turn memory. The assignment is about the
 
 ---
 
-## 8. Chose one free deployment unit for the submission demo
+## 8. Chose a single-service deployment with explicit persistence tradeoffs
 
 **The decision**
 
-Deploy the FastAPI app, UI, parser, search index, and SQLite database as one free Render web service. The SQLite index is ephemeral in this demo environment.
+Deploy the FastAPI app, UI, parser, search index, and SQLite database as one Render web service, and use a disk-backed plan when a reviewer needs the uploaded index to survive restarts.
 
 **The alternatives**
 
+- A free service with ephemeral SQLite state.
 - A paid Render service with a persistent disk.
 - A free app service plus managed Postgres.
 - Separate frontend/backend services.
 
 **The reasoning**
 
-A reviewer needs a public URL more than durable data for a short evaluation. One free service minimizes cost and deployment failure modes, while still supporting the complete upload → query journey within an active session.
+A reviewer needs a public URL and a stable, usable document index more than a purely minimal-cost config. One service keeps the architecture simple, while a disk-backed plan preserves the local database across normal restarts and makes the demo more trustworthy.
 
 **What I deliberately cut**
 
-Durable hosted data, horizontal scaling, background workers, object storage, and distributed tracing. The free demo makes its reset behavior explicit rather than implying production-grade retention.
+Durable hosted data, horizontal scaling, background workers, object storage, and distributed tracing. The disk-backed demo keeps the scope realistic without pretending the app is a multi-instance production system.
 
 ---
 

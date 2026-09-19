@@ -2,16 +2,20 @@ services:
   - type: web
     name: docquery
     runtime: python
-    # Free submission-demo deployment. SQLite state is intentionally ephemeral
-    # here; reviewers can upload and query within one active session.
-    plan: free
+    # Use a disk-backed plan so the SQLite index survives restarts for a smoother
+    # reviewer experience. The free tier does not provide a persistent database disk.
+    plan: starter
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
+    disk:
+      name: docquery-data
+      mountPath: /var/data
+      sizeGB: 10
     envVars:
       - key: DOCQUERY_DB_PATH
-        value: /tmp/docquery.db
+        value: /var/data/docquery.db
       - key: MAX_UPLOAD_MB
         value: "10"
       - key: OPENAI_MODEL
-        value: gpt-5.6-luna
+        value: gpt-4.1-mini

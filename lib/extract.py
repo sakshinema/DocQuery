@@ -133,7 +133,7 @@ def llm_extract(filename: str, full_text: str) -> dict[str, Any]:
     if not api_key:
         return heuristic_extract(filename, full_text)
 
-    model = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
+    model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
     prompt = f"""
 You are a document extraction service. Turn the supplied messy document into a conservative structured record.
 Never invent facts. Only extract values directly supported by the text.
@@ -187,7 +187,7 @@ def grounded_answer(question: str, sources: list[dict[str, Any]]) -> dict[str, A
             "mode": "search-only",
         }
 
-    model = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
+    model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
     source_text = "\n\n".join(
         f"[{i + 1}] {src['document_name']} — {('page ' + str(src['page'])) if src.get('page') else 'section ' + (src.get('section') or 'document')}\n{src['content']}"
         for i, src in enumerate(sources)

@@ -47,7 +47,7 @@ Image-only PDFs are intentionally detected as unreadable rather than silently ha
 - python-docx
 - OpenAI Responses API (optional)
 
-The current OpenAI model default is `gpt-5.6-luna`, chosen for cost-sensitive extraction/QA. The key is server-side only; no API key is exposed to the browser.
+The current OpenAI model default is `gpt-4.1-mini`, chosen for cost-sensitive extraction/QA while staying compatible with the standard Responses API. The key is server-side only; no API key is exposed to the browser.
 
 ## Run locally
 
@@ -80,13 +80,13 @@ The tests focus on real failure modes rather than superficial endpoint coverage:
 - extraction should recognize high-signal fields such as email and currency;
 - a question with no evidence must not be sent to the model.
 
-## Deploy on Render for free
+## Deploy on Render
 
-The repository includes `render.yaml` configured for Render's free web-service tier. It provides a public HTTPS URL without needing an OpenAI key.
+The repository includes `render.yaml` for a Render web service with a persistent SQLite disk. This is the safer submission setup because uploads and indexed search state are retained across restarts instead of dropping immediately when the service sleeps or restarts.
 
 Create a **New Blueprint** in Render, connect this repository, and let `render.yaml` configure the service. If you later want LLM extraction and grounded answers, add `OPENAI_API_KEY` in the service's Environment settings; it is not needed for the deterministic baseline. The app exposes `/api/health` as a health-check endpoint.
 
-The free service is intended for a live submission demo: it spins down after inactivity and its local SQLite index is reset on a restart, redeploy, or spin-down. A reviewer should upload documents and query them in the same active session. After deployment, verify `https://<your-service>.onrender.com/api/health`, then use that same base URL for the reviewer-facing submission link.
+For a short-lived demo-only deployment, a free tier can work, but it is intentionally limited and may reset local SQLite state on restarts. For a smoother judging experience, use the disk-backed Render plan and keep the DB in `/var/data` so the same upload/index state persists across a normal cycle. After deployment, verify `https://<your-service>.onrender.com/api/health`, then use that same base URL for the reviewer-facing submission link.
 
 For a durable production deployment, I would move the relational state to managed Postgres and binary storage to object storage. That is deliberately outside this five-day scope; the tradeoff is recorded in `decisions.md`.
 
