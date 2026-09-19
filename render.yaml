@@ -2,7 +2,10 @@ services:
   - type: web
     name: docquery
     runtime: python
-    plan: starter
+    # Persistent disks are unavailable on Render's free web-service plan.
+    # This is the smallest current paid plan and deliberately keeps the app
+    # single-instance, which is required for its colocated SQLite database.
+    plan: 0.5c-512mb
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health

@@ -224,3 +224,25 @@ The most believable failure modes in a document tool are an unexpectedly large u
 **What I deliberately cut**
 
 Virus scanning, asynchronous job orchestration, and distributed locking. Those require storage and worker infrastructure that would obscure the core single-service design. The present guardrails make the synchronous path honest and safe within its stated deployment boundary.
+
+---
+
+## 11. Kept a persistent deployment instead of a deceptively free one
+
+**The decision**
+
+Use Render's smallest current paid web-service plan with a 1 GB persistent disk, rather than a free service with an ephemeral SQLite file.
+
+**The alternatives**
+
+- Deploy the existing SQLite configuration on a free instance and accept index loss after restarts or redeploys.
+- Replace SQLite with a hosted database just to fit a free web-service tier.
+- Run a paid database and separate stateless application service.
+
+**The reasoning**
+
+The thing a reviewer uploads should still be searchable after the service restarts. An ephemeral database would make the demo intermittently misleading. A small persistent disk preserves the intentionally simple one-service architecture, and the blueprint now uses Render's current `0.5c-512mb` plan identifier so the config is deployable as written.
+
+**What I deliberately cut**
+
+Free-tier persistence and multi-instance scaling. The former is not supported by this hosting model; the latter conflicts with a single attached SQLite disk. Managed Postgres is the next move when the product has a workload that justifies it.
