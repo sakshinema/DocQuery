@@ -11,6 +11,12 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent
+# Local development uses `.env`; hosted environments provide the same values as
+# real environment variables. Existing environment variables always win.
+load_dotenv(BASE_DIR / ".env")
 
 from lib.db import (
     create_document,
@@ -28,7 +34,6 @@ from lib.extract import grounded_answer, llm_extract
 from lib.normalize import chunk_pages
 from lib.parser import DocumentParseError, UnsupportedDocument, parse_document
 
-BASE_DIR = Path(__file__).resolve().parent
 MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_MB", "10")) * 1024 * 1024
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".csv"}
 UPLOAD_READ_CHUNK_BYTES = 1024 * 1024
