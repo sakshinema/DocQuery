@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ document.title or document.filename }} — DocQuery{% endblock %}
+{% block content %}
+<a class="back-link" href="/">← Back to library</a>
+<section class="doc-header">
+  <div>
+    <div class="eyebrow">DOCUMENT</div>
+    <h1>{{ document.title or document.filename }}</h1>
+    <p class="subtle">{{ document.filename }} · {{ document.document_type or 'document' }} · {{ (document.size_bytes / 1024)|round(1) }} KB</p>
+  </div>
+  <button class="button danger" data-delete-document="{{ document.id }}">Delete</button>
+</section>
+
+{% if document.error %}
+<div class="alert error"><strong>Indexing failed.</strong> {{ document.error }}</div>
+{% endif %}
+
+<section class="doc-grid">
+  <div class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">STRUCTURED VIEW</div><h2>Extracted facts</h2></div><span class="tiny-label">{{ document.extraction.mode or 'deterministic' }}</span></div>
+    {% if document.summary %}<p class="summary">{{ document.summary }}</p>{% endif %}
+    {% if document.entities %}
+    <div class="field-grid">
+      {% for entity in document.entities %}
+      <div class="field-card">
+        <span>{{ entity.key }}</span>
+        <strong>{{ entity.value }}</strong>
+        <em>{{ (entity.confidence * 100)|round|int }}% confidence</em>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state compact"><h3>No structured fields extracted</h3><p>The text is still searchable. Add an OpenAI API key for deeper field extraction.</p></div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">DOCUMENT HEALTH</div><h2>Pipeline details</h2></div><span class="status-pill status-{{ document.status }}">{{ document.status }}</span></div>
+    <div class="detail-list">
+      <div><span>Created</span><strong>{{ document.created_at[:19].replace('T', ' ') }}</strong></div>
+      <div><span>Pages</span><strong>{{ document.metadata.page_count or 'n/a' }}</strong></div>
+      <div><span>SHA-256</span><strong class="mono">{{ document.sha256[:18] }}…</strong></div>
+      <div><span>Extraction confidence</span><strong>{{ ((document.extraction.confidence or 0) * 100)|round|int }}%</strong></div>
+    </div>
+    {% if document.extraction.warnings %}
+    <div class="warning-list">
+      {% for warning in document.extraction.warnings %}<div>△ {{ warning }}</div>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="panel evidence-panel">
+  <div class="panel-heading"><div><div class="eyebrow">SOURCE</div><h2>Indexed evidence</h2></div><span class="tiny-label">{{ document.chunks|length }} chunks</span></div>
+  <div class="chunk-list">
+    {% for chunk in document.chunks %}
+    <article class="chunk-card">
+      <div class="chunk-meta">{% if chunk.page %}Page {{ chunk.page }}{% endif %}{% if chunk.section %} · {{ chunk.section }}{% endif %}</div>
+      <p>{{ chunk.content }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

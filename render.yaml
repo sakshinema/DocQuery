@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: docquery
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: DOCQUERY_DB_PATH
+        value: /var/data/docquery.db
+      - key: MAX_UPLOAD_MB
+        value: "10"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.6-luna
+    disk:
+      name: docquery-data
+      mountPath: /var/data
+      sizeGB: 1

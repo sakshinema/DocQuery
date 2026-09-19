@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}DocQuery — Document intelligence{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <div class="eyebrow">MESSY IN · STRUCTURED OUT</div>
+    <h1>Find the answer without losing the evidence.</h1>
+    <p class="hero-copy">Upload PDFs, Word documents, CSVs, or text files. DocQuery extracts useful fields, indexes the source text, and answers questions with traceable excerpts.</p>
+  </div>
+  <div class="hero-badge">
+    <span class="pulse"></span>
+    <span>{{ stats.documents }} indexed</span>
+  </div>
+</section>
+
+<section class="stat-grid">
+  <div class="stat-card"><span>Documents</span><strong>{{ stats.documents }}</strong></div>
+  <div class="stat-card"><span>Indexed chunks</span><strong>{{ stats.chunks }}</strong></div>
+  <div class="stat-card"><span>Extracted fields</span><strong>{{ stats.fields }}</strong></div>
+  <div class="stat-card"><span>Pipeline</span><strong>{% if stats.processing %}{{ stats.processing }} processing{% else %}Healthy{% endif %}</strong></div>
+</section>
+
+<section class="workspace-grid">
+  <div class="panel upload-panel">
+    <div class="panel-heading">
+      <div>
+        <div class="eyebrow">INGEST</div>
+        <h2>Add a document</h2>
+      </div>
+      <span class="tiny-label">{{ max_upload_mb }} MB max</span>
+    </div>
+    <form id="upload-form">
+      <label class="dropzone" id="dropzone">
+        <input id="file-input" type="file" name="file" accept=".pdf,.docx,.txt,.csv" hidden>
+        <span class="drop-icon">↑</span>
+        <strong id="drop-title">Drop a file here</strong>
+        <span id="drop-subtitle">or click to browse · PDF, DOCX, TXT, CSV</span>
+      </label>
+      <button class="button primary full" type="submit">Index document</button>
+      <div class="helper" id="upload-status">The document is parsed first. Only after extraction succeeds is it marked ready.</div>
+    </form>
+  </div>
+
+  <div class="panel ask-panel">
+    <div class="panel-heading">
+      <div>
+        <div class="eyebrow">ASK</div>
+        <h2>Query your corpus</h2>
+      </div>
+      <span class="tiny-label">Evidence first</span>
+    </div>
+    <form id="ask-form">
+      <textarea id="question" rows="4" placeholder="e.g. Which invoices are overdue, and what evidence supports that?"></textarea>
+      <button class="button primary full" type="submit">Find answer</button>
+      <div id="ask-result" class="answer-box muted-box">Ask a question to retrieve matching passages and, when configured, generate a grounded answer.</div>
+    </form>
+  </div>
+</section>
+
+<section class="panel library-panel">
+  <div class="panel-heading library-heading">
+    <div>
+      <div class="eyebrow">LIBRARY</div>
+      <h2>Your indexed documents</h2>
+    </div>
+    <input id="library-search" class="search-input" type="search" placeholder="Filter documents…">
+  </div>
+  {% if documents %}
+  <div class="doc-list" id="doc-list">
+    {% for doc in documents %}
+    <a class="doc-row" href="/documents/{{ doc.id }}" data-search="{{ (doc.filename ~ ' ' ~ (doc.document_type or '') ~ ' ' ~ (doc.summary or ''))|lower }}">
+      <div class="file-icon">{{ (doc.filename.rsplit('.', 1)[-1] if '.' in doc.filename else 'DOC')|upper }}</div>
+      <div class="doc-main">
+        <strong>{{ doc.title or doc.filename }}</strong>
+        <span>{{ doc.filename }}{% if doc.document_type %} · {{ doc.document_type }}{% endif %}</span>
+      </div>
+      <div class="doc-status status-{{ doc.status }}">{{ doc.status }}</div>
+      <span class="arrow">→</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-mark">◇</div>
+    <h3>Your library is empty</h3>
+    <p>Start with one messy document. The first-run flow is intentionally small: ingest, inspect, ask.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

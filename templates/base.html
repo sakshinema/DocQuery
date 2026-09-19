@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}DocQuery{% endblock %}</title>
+  <meta name="description" content="Turn messy documents into structured, queryable data with evidence-backed answers.">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">DQ</span>
+        <span>DocQuery</span>
+      </a>
+      <div class="topbar-note">Document intelligence, with evidence</div>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
