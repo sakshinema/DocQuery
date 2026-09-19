@@ -65,7 +65,7 @@ The expected dataset for a five-day submission is small enough that SQLite FTS5 
 
 **Tradeoff accepted**
 
-This does not scale horizontally to multiple service instances. Render persistent disks are single-instance, so this architecture is intentionally paired with one web service.
+This does not scale horizontally to multiple service instances. The submission runs as one free web service; a durable multi-instance version would move relational state to Postgres.
 
 **What I deliberately cut**
 
@@ -161,25 +161,25 @@ Agentic tool use, web search, and multi-turn memory. The assignment is about the
 
 ---
 
-## 8. Chose one coherent deployment unit
+## 8. Chose one free deployment unit for the submission demo
 
 **The decision**
 
-Deploy the FastAPI app, UI, parser, search index, and SQLite database as one Render web service with a persistent disk.
+Deploy the FastAPI app, UI, parser, search index, and SQLite database as one free Render web service. The SQLite index is ephemeral in this demo environment.
 
 **The alternatives**
 
+- A paid Render service with a persistent disk.
+- A free app service plus managed Postgres.
 - Separate frontend/backend services.
-- Serverless frontend + managed database + object storage.
-- Dockerized multi-service deployment.
 
 **The reasoning**
 
-A reviewer should be able to understand and operate the project without reconstructing a distributed system. The one-service architecture also minimizes deployment failure modes during a five-day assignment.
+A reviewer needs a public URL more than durable data for a short evaluation. One free service minimizes cost and deployment failure modes, while still supporting the complete upload → query journey within an active session.
 
 **What I deliberately cut**
 
-Horizontal scaling, background workers, object storage, and distributed tracing. Those become relevant once workload and reliability requirements are known.
+Durable hosted data, horizontal scaling, background workers, object storage, and distributed tracing. The free demo makes its reset behavior explicit rather than implying production-grade retention.
 
 ---
 
@@ -226,23 +226,3 @@ The most believable failure modes in a document tool are an unexpectedly large u
 Virus scanning, asynchronous job orchestration, and distributed locking. Those require storage and worker infrastructure that would obscure the core single-service design. The present guardrails make the synchronous path honest and safe within its stated deployment boundary.
 
 ---
-
-## 11. Kept a persistent deployment instead of a deceptively free one
-
-**The decision**
-
-Use Render's smallest current paid web-service plan with a 1 GB persistent disk, rather than a free service with an ephemeral SQLite file.
-
-**The alternatives**
-
-- Deploy the existing SQLite configuration on a free instance and accept index loss after restarts or redeploys.
-- Replace SQLite with a hosted database just to fit a free web-service tier.
-- Run a paid database and separate stateless application service.
-
-**The reasoning**
-
-The thing a reviewer uploads should still be searchable after the service restarts. An ephemeral database would make the demo intermittently misleading. A small persistent disk preserves the intentionally simple one-service architecture, and the blueprint now uses Render's current `0.5c-512mb` plan identifier so the config is deployable as written.
-
-**What I deliberately cut**
-
-Free-tier persistence and multi-instance scaling. The former is not supported by this hosting model; the latter conflicts with a single attached SQLite disk. Managed Postgres is the next move when the product has a workload that justifies it.

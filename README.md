@@ -80,15 +80,15 @@ The tests focus on real failure modes rather than superficial endpoint coverage:
 - extraction should recognize high-signal fields such as email and currency;
 - a question with no evidence must not be sent to the model.
 
-## Deploy on Render
+## Deploy on Render for free
 
-The repository includes `render.yaml`. The service uses a 1 GB persistent disk mounted at `/var/data` because SQLite is intentionally colocated with the single web service for this five-day assignment. Render documents that a service filesystem is ephemeral unless a persistent disk is attached.
+The repository includes `render.yaml` configured for Render's free web-service tier. It provides a public HTTPS URL without needing an OpenAI key.
 
 Create a **New Blueprint** in Render, connect this repository, and let `render.yaml` configure the service. Add `OPENAI_API_KEY` only if you want LLM extraction and grounded answers; it is not needed for the deterministic baseline. The app exposes `/api/health` as a health-check endpoint.
 
-The attached SQLite disk requires a paid Render web-service plan. The blueprint uses Render's smallest current paid plan (`0.5c-512mb`) because a free instance cannot retain the index across restarts. After deployment, verify `https://<your-service>.onrender.com/api/health`, then use that same base URL for the reviewer-facing submission link.
+The free service is intended for a live submission demo: it spins down after inactivity and its local SQLite index is reset on a restart, redeploy, or spin-down. A reviewer should upload documents and query them in the same active session. After deployment, verify `https://<your-service>.onrender.com/api/health`, then use that same base URL for the reviewer-facing submission link.
 
-For a larger production deployment, I would move the relational state to managed Postgres and binary storage to object storage. That is deliberately outside this five-day scope; the tradeoff is recorded in `decisions.md`.
+For a durable production deployment, I would move the relational state to managed Postgres and binary storage to object storage. That is deliberately outside this five-day scope; the tradeoff is recorded in `decisions.md`.
 
 ## Demo script
 

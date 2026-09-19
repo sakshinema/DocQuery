@@ -80,13 +80,13 @@ question
   └─ return answer + source chunks
 ```
 
-## Scaling boundary
+## Deployment boundary
 
-The current architecture is intentionally single-instance. The first production scaling step would be:
+The submission deployment is intentionally a free, single-service demo. Its SQLite file lives in ephemeral storage, so a reviewer uploads and queries documents within one active session. The first durable production step would be:
 
 1. move SQLite relational state to Postgres;
 2. put original binaries in object storage if binary retention is required;
 3. keep a search abstraction so FTS5 can later be replaced by Postgres full-text search or a vector/hybrid index;
 4. move long-running extraction to a durable queue.
 
-Those changes are intentionally deferred until usage patterns justify them.
+Those changes are intentionally deferred until the product has real usage and a durable-data requirement.
