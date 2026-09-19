@@ -84,7 +84,7 @@ The tests focus on real failure modes rather than superficial endpoint coverage:
 
 The repository includes `render.yaml` configured for Render's free web-service tier. It provides a public HTTPS URL without needing an OpenAI key.
 
-Create a **New Blueprint** in Render, connect this repository, and let `render.yaml` configure the service. Add `OPENAI_API_KEY` only if you want LLM extraction and grounded answers; it is not needed for the deterministic baseline. The app exposes `/api/health` as a health-check endpoint.
+Create a **New Blueprint** in Render, connect this repository, and let `render.yaml` configure the service. If you later want LLM extraction and grounded answers, add `OPENAI_API_KEY` in the service's Environment settings; it is not needed for the deterministic baseline. The app exposes `/api/health` as a health-check endpoint.
 
 The free service is intended for a live submission demo: it spins down after inactivity and its local SQLite index is reset on a restart, redeploy, or spin-down. A reviewer should upload documents and query them in the same active session. After deployment, verify `https://<your-service>.onrender.com/api/health`, then use that same base URL for the reviewer-facing submission link.
 

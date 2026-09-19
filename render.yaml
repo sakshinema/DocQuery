@@ -13,7 +13,5 @@ services:
         value: /tmp/docquery.db
       - key: MAX_UPLOAD_MB
         value: "10"
-      - key: OPENAI_API_KEY
-        sync: false
       - key: OPENAI_MODEL
         value: gpt-5.6-luna
